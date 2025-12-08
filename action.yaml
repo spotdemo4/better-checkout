@@ -22,21 +22,32 @@ inputs:
 outputs:
   name:
     description: git user name
-    value: ${{ steps.user.outputs.name }}
+    value: ${{ steps.github.outputs.name || steps.gitea.outputs.name }}
 
   email:
     description: git user email
-    value: ${{ steps.user.outputs.email }}
+    value: ${{ steps.github.outputs.email || steps.gitea.outputs.email }}
 
   token:
     description: app token
-    value: ${{ steps.app.outputs.token }}
+    value: ${{ steps.app.outputs.token || inputs.token }}
 
 runs:
   using: composite
   steps:
+    - name: Detect platform
+      shell: bash
+      run: |
+        if [[ -n "${GITEA_ACTIONS}" ]]; then
+          echo "PLATFORM=gitea" >> $GITHUB_ENV
+        elif [[ -n "${FORGEJO_ACTIONS}" ]]; then
+          echo "PLATFORM=forgejo" >> $GITHUB_ENV
+        elif [[ -n "${GITHUB_ACTIONS}" ]]; then
+          echo "PLATFORM=github" >> $GITHUB_ENV
+        fi
+
     - name: Create app token
-      if: ${{ inputs.app-id != '' && inputs.private-key != '' }}
+      if: ${{ env.PLATFORM == 'github' && inputs.app-id != '' && inputs.private-key != '' }}
       uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
       id: app
       with:
@@ -48,9 +59,10 @@ runs:
       with:
         token: ${{ steps.app.outputs.token || inputs.token }}
 
-    - name: Setup git user
+    - name: Setup git user (github)
+      if: ${{ env.PLATFORM == 'github' }}
       shell: bash
-      id: user
+      id: github
       env:
         GH_TOKEN: ${{ steps.app.outputs.token || inputs.token }}
       run: |
@@ -69,5 +81,26 @@ runs:
 
         echo "name=${NAME}" >> "$GITHUB_OUTPUT"
         echo "email=${EMAIL}" >> "$GITHUB_OUTPUT"
+
+        echo "git user: ${NAME} <${EMAIL}>"
+
+    - name: Setup git user (gitea)
+      if: ${{ env.PLATFORM == 'gitea' || env.PLATFORM == 'forgejo' }}
+      shell: bash
+      id: gitea
+      run: |
+        if ! command -v jq >/dev/null 2>&1; then
+          TMP_BIN=$(mktemp -d)
+          curl -sSL -o "${TMP_BIN}/jq" https://github.com/jqlang/jq/releases/latest/download/jq-linux-amd64
+          chmod +x "${TMP_BIN}/jq"
+          export PATH=${PATH}:${TMP_BIN}
+        fi
+
+        USER=$(curl -H "Authorization: token ${{ inputs.token }}" "${{ github.server_url }}/api/v1/user" )
+        NAME=$(echo "${USER}" | jq -r .login)
+        EMAIL=$(echo "${USER}" | jq -r .email)
+
+        git config --local user.name "${NAME}"
+        git config --local user.email "${EMAIL}"
 
         echo "git user: ${NAME} <${EMAIL}>"
