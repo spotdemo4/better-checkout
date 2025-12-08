@@ -36,7 +36,7 @@ runs:
   using: composite
   steps:
     - name: Create app token
-      if: ${{ inputs.app_id != '' && inputs.app_key != '' }}
+      if: ${{ inputs.app-id != '' && inputs.private-key != '' }}
       uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
       id: app
       with:
