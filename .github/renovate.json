@@ -19,6 +19,15 @@
     {
       "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
       "automerge": true
+    },
+    {
+      "groupName": "github actions",
+      "matchFileNames": [".github/workflows/*.yaml"],
+      "matchManagers": ["github-actions"]
+    },
+    {
+      "commitMessagePrefix": "feat: ",
+      "matchFileNames": ["**/action.yaml"]
     }
   ]
 }
