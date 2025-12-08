@@ -54,10 +54,7 @@ runs:
       env:
         GH_TOKEN: ${{ steps.app.outputs.token || inputs.token }}
       run: |
-        if [[ -z "$GH_TOKEN" ]]; then
-          echo "No token available, skipping git user setup"
-          exit 0
-        elif [[ -n "${{ steps.app.outputs.app-slug }}" ]]; then
+        if [[ -n "${{ steps.app.outputs.app-slug }}" ]]; then
           NAME="${{ steps.app.outputs.app-slug }}[bot]"
         else
           NAME="github-actions[bot]"
@@ -72,3 +69,5 @@ runs:
 
         echo "name=${NAME}" >> "$GITHUB_OUTPUT"
         echo "email=${EMAIL}" >> "$GITHUB_OUTPUT"
+
+        echo "git user: ${NAME} <${EMAIL}>"
