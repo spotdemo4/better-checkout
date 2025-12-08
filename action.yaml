@@ -1,0 +1,74 @@
+name: Better checkout
+description: A better version of actions/checkout
+author: trev
+branding:
+  icon: chevron-up
+  color: yellow
+
+inputs:
+  token:
+    description: token for checkout and git operations
+    required: false
+    default: ${{ github.token }}
+
+  app-id:
+    description: github app/client id
+    required: false
+
+  private-key:
+    description: github private key
+    required: false
+
+outputs:
+  name:
+    description: git user name
+    value: ${{ steps.user.outputs.name }}
+
+  email:
+    description: git user email
+    value: ${{ steps.user.outputs.email }}
+
+  token:
+    description: app token
+    value: ${{ steps.app.outputs.token }}
+
+runs:
+  using: composite
+  steps:
+    - name: Create app token
+      if: ${{ inputs.app_id != '' && inputs.app_key != '' }}
+      uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
+      id: app
+      with:
+        app-id: ${{ inputs.app-id }}
+        private-key: ${{ inputs.private-key }}
+
+    - name: Checkout
+      uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+      with:
+        token: ${{ steps.app.outputs.token || inputs.token }}
+
+    - name: Setup git user
+      shell: bash
+      id: user
+      run: |
+        TOKEN="${{ steps.app.outputs.token || inputs.token }}"
+
+        if [[ -z "$TOKEN" ]]; then
+          echo "No token available, skipping git user setup"
+          exit 0
+        elif [[ -n "${{steps.app.outputs.app-slug}}"]]; then
+          NAME="${{ steps.app.outputs.app-slug }}[bot]"
+        else
+          NAME="github-actions[bot]"
+        fi
+
+        ID=$(gh api "/users/${NAME}" --jq .id)
+        EMAIL="${ID}+${NAME}@users.noreply.github.com"
+
+        git config --global user.name "${NAME}"
+        git config --global user.email "${EMAIL}"
+        git remote set-url origin "https://${TOKEN}@github.com/${{ github.repository }}.git"
+
+        echo "name=${NAME}" >> "$GITHUB_OUTPUT"
+        echo "email=${EMAIL}" >> "$GITHUB_OUTPUT"
