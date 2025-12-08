@@ -57,7 +57,7 @@ runs:
         if [[ -z "$TOKEN" ]]; then
           echo "No token available, skipping git user setup"
           exit 0
-        elif [[ -n "${{steps.app.outputs.app-slug}}"]]; then
+        elif [[ -n "${{ steps.app.outputs.app-slug }}" ]]; then
           NAME="${{ steps.app.outputs.app-slug }}[bot]"
         else
           NAME="github-actions[bot]"
@@ -66,8 +66,8 @@ runs:
         ID=$(gh api "/users/${NAME}" --jq .id)
         EMAIL="${ID}+${NAME}@users.noreply.github.com"
 
-        git config --global user.name "${NAME}"
-        git config --global user.email "${EMAIL}"
+        git config --local user.name "${NAME}"
+        git config --local user.email "${EMAIL}"
         git remote set-url origin "https://${TOKEN}@github.com/${{ github.repository }}.git"
 
         echo "name=${NAME}" >> "$GITHUB_OUTPUT"
