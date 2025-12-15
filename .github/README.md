@@ -7,7 +7,7 @@ works for github, gitea & forgejo
 ## Usage
 
 ```yaml
-- uses: spotdemo4/better-checkout@v0.0.2
+- uses: spotdemo4/better-checkout@v0.1.0
   id: checkout
   with:
     token: # ...
