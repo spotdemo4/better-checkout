@@ -34,13 +34,13 @@ jobs:
     needs: check
     steps:
       - name: Checkout 1
-        uses: spotdemo4/better-checkout@eaec73409dbe842ad8446ee818976878b0e9108d # v0.0.2
+        uses: spotdemo4/better-checkout@main
         with:
           app-id: ${{ vars.CLIENT_ID }}
           private-key: ${{ secrets.PRIVATE_KEY }}
 
       - name: Checkout 2
-        uses: spotdemo4/better-checkout@eaec73409dbe842ad8446ee818976878b0e9108d # v0.0.2
+        uses: spotdemo4/better-checkout@main
         with:
           app_id: ${{ vars.CLIENT_ID }}
           app_key: ${{ secrets.PRIVATE_KEY }}
