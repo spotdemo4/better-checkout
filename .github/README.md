@@ -34,6 +34,10 @@ github private key
 
 depth for git fetch
 
+### `shell`
+
+shell for [nix-develop](https://github.com/nicknovitski/nix-develop)
+
 ## Outputs
 
 ### `token`

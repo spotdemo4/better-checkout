@@ -31,6 +31,10 @@ inputs:
     required: false
     default: "1"
 
+  shell:
+    description: nix flake devShell to use
+    required: false
+
 outputs:
   token:
     description: app token
@@ -122,3 +126,9 @@ runs:
         git config --local user.email "${EMAIL}"
 
         echo "git user: ${NAME} <${EMAIL}>"
+
+    - name: Setup nix shell
+      if: ${{ inputs.shell != '' }}
+      uses: nicknovitski/nix-develop@9be7cfb4b10451d3390a75dc18ad0465bed4932a # v1.2.1
+      with:
+        arguments: ".#${{ inputs.shell }}"
