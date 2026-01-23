@@ -33,14 +33,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: check
     steps:
-      - name: Checkout 1
+      - name: Checkout
         uses: spotdemo4/better-checkout@main
         with:
           app-id: ${{ vars.CLIENT_ID }}
           private-key: ${{ secrets.PRIVATE_KEY }}
-
-      - name: Checkout 2
-        uses: spotdemo4/better-checkout@main
-        with:
-          app_id: ${{ vars.CLIENT_ID }}
-          app_key: ${{ secrets.PRIVATE_KEY }}

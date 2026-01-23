@@ -15,15 +15,9 @@ inputs:
   app-id:
     description: github app/client id
     required: false
-  app_id:
-    description: github app/client id
-    required: false
 
   private-key:
-    description: github private key
-    required: false
-  app_key:
-    description: github private key
+    description: github app private key
     required: false
 
   fetch-depth:
@@ -31,9 +25,10 @@ inputs:
     required: false
     default: "1"
 
-  shell:
-    description: nix flake devShell to use
+  submodules:
+    description: whether to checkout submodules
     required: false
+    default: "false"
 
 outputs:
   token:
@@ -64,24 +59,25 @@ runs:
           echo "PLATFORM=github" >> $GITHUB_ENV
         fi
 
-    - name: Create app token
-      if: ${{ env.PLATFORM == 'github' && ( inputs.app-id || inputs.app_id ) != '' && ( inputs.private-key || inputs.app_key ) != '' }}
+    - id: app
+      name: Create app token
+      if: ${{ env.PLATFORM == 'github' && inputs.app-id != '' && inputs.private-key != '' }}
       uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
-      id: app
       with:
-        app-id: ${{ inputs.app-id || inputs.app_id }}
-        private-key: ${{ inputs.private-key || inputs.app_key }}
+        app-id: ${{ inputs.app-id }}
+        private-key: ${{ inputs.private-key }}
 
     - name: Checkout
       uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       with:
-        fetch-depth: ${{ inputs.fetch-depth }}
         token: ${{ steps.app.outputs.token || inputs.token }}
+        fetch-depth: ${{ inputs.fetch-depth }}
+        submodules: ${{ inputs.submodules }}
 
-    - name: Setup git user (github)
+    - id: github
+      name: Setup git user (github)
       if: ${{ env.PLATFORM == 'github' }}
       shell: bash
-      id: github
       env:
         GH_TOKEN: ${{ steps.app.outputs.token || inputs.token }}
       run: |
@@ -104,12 +100,12 @@ runs:
 
         echo "git user: ${NAME} <${EMAIL}>"
 
-    - name: Setup git user (gitea)
+    - id: gitea
+      name: Setup git user (gitea/forgejo)
       if: ${{ env.PLATFORM == 'gitea' || env.PLATFORM == 'forgejo' }}
       shell: bash
-      id: gitea
       run: |
-        # Setup git user (gitea)
+        # Setup git user (gitea/forgejo)
 
         if ! command -v jq >/dev/null 2>&1; then
           TMP_BIN=$(mktemp -d)
@@ -125,10 +121,7 @@ runs:
         git config --local user.name "${NAME}"
         git config --local user.email "${EMAIL}"
 
-        echo "git user: ${NAME} <${EMAIL}>"
+        echo "name=${NAME}" >> "$GITHUB_OUTPUT"
+        echo "email=${EMAIL}" >> "$GITHUB_OUTPUT"
 
-    - name: Setup nix shell
-      if: ${{ inputs.shell != '' }}
-      uses: nicknovitski/nix-develop@9be7cfb4b10451d3390a75dc18ad0465bed4932a # v1.2.1
-      with:
-        arguments: ".#${{ inputs.shell }}"
+        echo "git user: ${NAME} <${EMAIL}>"

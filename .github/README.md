@@ -1,6 +1,10 @@
 # better checkout
 
-composite action that checks out the repository and sets the git `user.name` and `user.email`
+composite action that:
+
+- creates a github app token via [actions/create-github-app-token](https://github.com/actions/create-github-app-token) (optional)
+- checks out the repository via [actions/checkout](https://github.com/actions/checkout)
+- sets the git `user.name` and `user.email`
 
 works for github, gitea & forgejo
 
@@ -28,15 +32,15 @@ github app client id
 
 ### `private-key`
 
-github private key
+github app private key
 
 ### `fetch-depth`
 
 depth for git fetch
 
-### `shell`
+### `submodules`
 
-shell for [nix-develop](https://github.com/nicknovitski/nix-develop)
+whether to checkout submodules
 
 ## Outputs
 
