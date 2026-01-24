@@ -11,7 +11,7 @@ works for github, gitea & forgejo
 ## Usage
 
 ```yaml
-- uses: spotdemo4/better-checkout@v0.3.0
+- uses: spotdemo4/better-checkout@v0.4.0
   id: checkout
   with:
     token: # ...
