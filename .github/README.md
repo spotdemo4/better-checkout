@@ -6,18 +6,19 @@ composite action that:
 - checks out the repository via [actions/checkout](https://github.com/actions/checkout)
 - sets the git `user.name` and `user.email`
 
-works for github, gitea & forgejo
+works for github, gitea & forgejo actions
 
 ## Usage
 
 ```yaml
-- uses: spotdemo4/better-checkout@v0.4.0
-  id: checkout
+- id: checkout
+  name: Checkout
+  uses: spotdemo4/better-checkout@v0.4.0
   with:
-    token: # ...
-    app-id: ${{ vars.CLIENT_ID }}
+    token: ${{ secrets.TOKEN }}
+    # or
+    app-id: ${{ vars.APP_ID }}
     private-key: ${{ secrets.PRIVATE_KEY }}
-    fetch-depth: # 0
 ```
 
 ## Inputs
@@ -46,15 +47,15 @@ whether to checkout submodules
 
 ### `platform`
 
-git platform (github/gitea/forgejo)
+git platform (`github`/`gitea`/`forgejo`)
 
 ### `os`
 
-runner operating system (linux/darwin/windows)
+runner operating system (`linux`/`darwin`/`windows`)
 
 ### `arch`
 
-runner architecture (amd64/arm64/arm/386)
+runner architecture (`amd64`/`arm64`/`arm`/`386`)
 
 ### `token`
 
