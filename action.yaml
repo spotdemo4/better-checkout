@@ -31,6 +31,18 @@ inputs:
     default: "false"
 
 outputs:
+  platform:
+    description: detected platform
+    value: ${{ steps.system.outputs.platform }}
+
+  os:
+    description: detected operating system
+    value: ${{ steps.system.outputs.os }}
+
+  arch:
+    description: detected architecture
+    value: ${{ steps.system.outputs.arch }}
+
   token:
     description: app token
     value: ${{ steps.app.outputs.token || inputs.token }}
@@ -46,22 +58,70 @@ outputs:
 runs:
   using: composite
   steps:
-    - name: Detect platform
+    - id: system
+      name: Detect system
       shell: bash
       run: |
-        # Detect platform
+        # Detect platform, os, arch
 
         if [[ -n "${GITEA_ACTIONS}" ]]; then
-          echo "PLATFORM=gitea" >> $GITHUB_ENV
+          platform=gitea
         elif [[ -n "${FORGEJO_ACTIONS}" ]]; then
-          echo "PLATFORM=forgejo" >> $GITHUB_ENV
+          platform=forgejo
         elif [[ -n "${GITHUB_ACTIONS}" ]]; then
-          echo "PLATFORM=github" >> $GITHUB_ENV
+          platform=github
+        fi
+
+        echo "platform=${platform}" >> "$GITHUB_OUTPUT"
+        echo "platform: ${platform}"
+
+        if [[ "${{ runner.os }}" == "Linux" ]]; then
+          os=linux
+        elif [[ "${{ runner.os }}" == "Windows" ]]; then
+          os=windows
+        elif [[ "${{ runner.os }}" == "macOS" ]]; then
+          os=darwin
+        fi
+
+        echo "os=${os}" >> "$GITHUB_OUTPUT"
+        echo "operating system: ${os}"
+
+        if [[ "${{ runner.arch }}" == "X64" ]]; then
+          arch=amd64
+        elif [[ "${{ runner.arch }}" == "ARM64" ]]; then
+          arch=arm64
+        elif [[ "${{ runner.arch }}" == "ARM" ]]; then
+          arch=arm
+        elif [[ "${{ runner.arch }}" == "X86" ]]; then
+          arch=386
+        fi
+
+        echo "arch=${arch}" >> "$GITHUB_OUTPUT"
+        echo "architecture: ${arch}"
+
+    - name: Install dependencies
+      if: ${{ steps.system.outputs.os == 'linux' || steps.system.outputs.os == 'darwin' }}
+      shell: bash
+      run: |
+        # Install dependencies
+
+        BINS=$(mktemp -d -p "${{ runner.temp }}")
+        echo "${BINS}" >> "$GITHUB_PATH"
+
+        # jq
+        if ! command -v jq &> /dev/null; then
+          if [[ "${{ steps.system.outputs.os }}" == "darwin" ]]; then
+            curl -sSL -o "${BINS}/jq" "https://github.com/jqlang/jq/releases/latest/download/jq-macos-${{ steps.system.outputs.arch }}"
+          elif [[ "${{ steps.system.outputs.os }}" == "linux" ]]; then
+            curl -sSL -o "${BINS}/jq" "https://github.com/jqlang/jq/releases/latest/download/jq-linux-${{ steps.system.outputs.arch }}"
+          fi
+
+          chmod +x "${BINS}/jq"
         fi
 
     - id: app
       name: Create app token
-      if: ${{ env.PLATFORM == 'github' && inputs.app-id != '' && inputs.private-key != '' }}
+      if: ${{ steps.system.outputs.platform == 'github' && inputs.app-id != '' && inputs.private-key != '' }}
       uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
       with:
         app-id: ${{ inputs.app-id }}
@@ -76,7 +136,7 @@ runs:
 
     - id: github
       name: Setup git user (github)
-      if: ${{ env.PLATFORM == 'github' }}
+      if: ${{ steps.system.outputs.platform == 'github' }}
       shell: bash
       env:
         GH_TOKEN: ${{ steps.app.outputs.token || inputs.token }}
@@ -102,17 +162,10 @@ runs:
 
     - id: gitea
       name: Setup git user (gitea/forgejo)
-      if: ${{ env.PLATFORM == 'gitea' || env.PLATFORM == 'forgejo' }}
+      if: ${{ steps.system.outputs.platform == 'gitea' || steps.system.outputs.platform == 'forgejo' }}
       shell: bash
       run: |
         # Setup git user (gitea/forgejo)
-
-        if ! command -v jq >/dev/null 2>&1; then
-          TMP_BIN=$(mktemp -d)
-          curl -sSL -o "${TMP_BIN}/jq" https://github.com/jqlang/jq/releases/latest/download/jq-linux-amd64
-          chmod +x "${TMP_BIN}/jq"
-          export PATH=${PATH}:${TMP_BIN}
-        fi
 
         USER=$(curl -H "Authorization: token ${{ inputs.token }}" "${{ github.server_url }}/api/v1/user" )
         NAME=$(echo "${USER}" | jq -r .login)

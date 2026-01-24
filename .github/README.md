@@ -44,6 +44,18 @@ whether to checkout submodules
 
 ## Outputs
 
+### `platform`
+
+git platform (github/gitea/forgejo)
+
+### `os`
+
+runner operating system (linux/darwin/windows)
+
+### `arch`
+
+runner architecture (amd64/arm64/arm/386)
+
 ### `token`
 
 github app token
