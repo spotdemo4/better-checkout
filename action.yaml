@@ -20,6 +20,10 @@ inputs:
     description: github app private key
     required: false
 
+  ref:
+    description: git ref to checkout
+    required: false
+
   fetch-depth:
     description: depth for git fetch
     required: false
@@ -130,6 +134,7 @@ runs:
     - name: Checkout
       uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       with:
+        ref: ${{ inputs.ref }}
         token: ${{ steps.app.outputs.token || inputs.token }}
         fetch-depth: ${{ inputs.fetch-depth }}
         submodules: ${{ inputs.submodules }}
