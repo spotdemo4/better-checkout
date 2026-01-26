@@ -35,6 +35,10 @@ github app client id
 
 github app private key
 
+### `ref`
+
+git ref to checkout
+
 ### `fetch-depth`
 
 depth for git fetch
