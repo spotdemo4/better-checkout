@@ -2,8 +2,8 @@
 
 composite action that:
 
-- creates a github app token via [actions/create-github-app-token](https://github.com/actions/create-github-app-token) (optional)
-- checks out the repository via [actions/checkout](https://github.com/actions/checkout)
+- creates a github app token ([`actions/create-github-app-token`](https://github.com/actions/create-github-app-token)) (optional)
+- checks out the repository ([`actions/checkout`](https://github.com/actions/checkout))
 - sets the git `user.name` and `user.email`
 
 works for github, gitea & forgejo actions
