@@ -34,6 +34,10 @@ inputs:
     required: false
     default: "false"
 
+  path:
+    description: path to checkout the repository into
+    required: false
+
 outputs:
   platform:
     description: detected platform
@@ -138,6 +142,7 @@ runs:
         token: ${{ steps.app.outputs.token || inputs.token }}
         fetch-depth: ${{ inputs.fetch-depth }}
         submodules: ${{ inputs.submodules }}
+        path: ${{ inputs.path }}
 
     - id: github
       name: Setup git user (github)

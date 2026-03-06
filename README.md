@@ -47,6 +47,10 @@ depth for git fetch
 
 whether to checkout submodules
 
+### `path`
+
+path to checkout repo
+
 ## Outputs
 
 ### `platform`
