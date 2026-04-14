@@ -13,7 +13,7 @@ works for github, gitea & forgejo actions
 ```yaml
 - id: checkout
   name: Checkout
-  uses: spotdemo4/better-checkout@v0.5.0
+  uses: spotdemo4/better-checkout@v0.8.0
   with:
     token: ${{ secrets.TOKEN }}
     # or
