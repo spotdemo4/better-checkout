@@ -36,5 +36,4 @@ jobs:
         with:
           debug: ${{ runner.debug }}
           force: ${{ inputs.force }}
-          files: |-
-            .github/README.md
+          files: README.md
