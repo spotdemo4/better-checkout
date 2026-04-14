@@ -27,9 +27,9 @@ works for github, gitea & forgejo actions
 
 checkout token
 
-### `app-id`
+### `app-id` or `client-id`
 
-github app client id
+github app/client id
 
 ### `private-key`
 
