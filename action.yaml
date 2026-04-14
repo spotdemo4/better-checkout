@@ -145,6 +145,7 @@ runs:
         ref: ${{ inputs.ref }}
         token: ${{ steps.app.outputs.token || inputs.token }}
         fetch-depth: ${{ inputs.fetch-depth }}
+        fetch-tags: true
         submodules: ${{ inputs.submodules }}
         path: ${{ inputs.path }}
 
