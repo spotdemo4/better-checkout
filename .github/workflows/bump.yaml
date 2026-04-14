@@ -24,7 +24,8 @@ jobs:
   bump:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - id: checkout
+        name: Checkout
         uses: spotdemo4/better-checkout@347527b6a5b1c1dba59ad3b66f68b9b0835cb740 # v0.8.0
         with:
           app-id: ${{ vars.CLIENT_ID }}
@@ -34,6 +35,7 @@ jobs:
       - name: Bump
         uses: spotdemo4/bumper@eef9e1c81fe47bc0093d51efb243543ce5f7f2ad # v0.14.5
         with:
+          github_token: ${{ steps.checkout.outputs.token }}
           debug: ${{ runner.debug }}
           force: ${{ inputs.force }}
           files: README.md
