@@ -16,6 +16,10 @@ inputs:
     description: github app/client id
     required: false
 
+  client-id:
+    description: github app/client id
+    required: false
+
   private-key:
     description: github app private key
     required: false
@@ -129,10 +133,10 @@ runs:
 
     - id: app
       name: Create app token
-      if: ${{ steps.system.outputs.platform == 'github' && inputs.app-id != '' && inputs.private-key != '' }}
+      if: ${{ steps.system.outputs.platform == 'github' && inputs.private-key != '' }}
       uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3 # v3.1.1
       with:
-        app-id: ${{ inputs.app-id }}
+        client-id: ${{ inputs.app-id || inputs.client-id }}
         private-key: ${{ inputs.private-key }}
 
     - name: Checkout

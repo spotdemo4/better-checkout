@@ -36,5 +36,5 @@ jobs:
       - name: Checkout
         uses: spotdemo4/better-checkout@main
         with:
-          app-id: ${{ vars.CLIENT_ID }}
+          client-id: ${{ vars.CLIENT_ID }}
           private-key: ${{ secrets.PRIVATE_KEY }}
