@@ -31,9 +31,13 @@ checkout token
 
 github app/client id
 
+aliases: `app_id`, `client_id`
+
 ### `private-key`
 
 github app private key
+
+aliases: `private_key`, `app_key`
 
 ### `ref`
 
@@ -41,7 +45,9 @@ git ref to checkout
 
 ### `fetch-depth`
 
-depth for git fetch
+depth for git fetch (default: `1`)
+
+alias: `fetch_depth`
 
 ### `submodules`
 

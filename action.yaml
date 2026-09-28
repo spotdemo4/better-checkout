@@ -16,12 +16,28 @@ inputs:
     description: github app/client id
     required: false
 
+  app_id:
+    description: alias for app-id
+    required: false
+
   client-id:
     description: github app/client id
     required: false
 
+  client_id:
+    description: alias for client-id
+    required: false
+
   private-key:
     description: github app private key
+    required: false
+
+  private_key:
+    description: alias for private-key
+    required: false
+
+  app_key:
+    description: alias for private-key
     required: false
 
   ref:
@@ -29,9 +45,12 @@ inputs:
     required: false
 
   fetch-depth:
-    description: depth for git fetch
+    description: "depth for git fetch (default: 1)"
     required: false
-    default: "1"
+
+  fetch_depth:
+    description: alias for fetch-depth
+    required: false
 
   submodules:
     description: whether to checkout submodules
@@ -133,18 +152,18 @@ runs:
 
     - id: app
       name: Create app token
-      if: ${{ steps.system.outputs.platform == 'github' && inputs.private-key != '' }}
+      if: ${{ steps.system.outputs.platform == 'github' && (inputs.private-key || inputs.private_key || inputs.app_key) != '' }}
       uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
       with:
-        client-id: ${{ inputs.app-id || inputs.client-id }}
-        private-key: ${{ inputs.private-key }}
+        client-id: ${{ inputs.app-id || inputs.app_id || inputs.client-id || inputs.client_id }}
+        private-key: ${{ inputs.private-key || inputs.private_key || inputs.app_key }}
 
     - name: Checkout
       uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       with:
         ref: ${{ inputs.ref }}
         token: ${{ steps.app.outputs.token || inputs.token }}
-        fetch-depth: ${{ inputs.fetch-depth }}
+        fetch-depth: ${{ inputs.fetch-depth || inputs.fetch_depth || '1' }}
         fetch-tags: true
         submodules: ${{ inputs.submodules }}
         path: ${{ inputs.path }}
