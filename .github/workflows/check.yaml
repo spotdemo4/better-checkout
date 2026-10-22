@@ -21,7 +21,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Validate actions
-        uses: jazzsequence/github-action-validator@863579565c8771e1d64646e44ad5ff4884eac85f # v1.0.5
+        uses: jazzsequence/github-action-validator@85010a0f813be08379021955ed4a61775c08679e # v1.0.6
         with:
           show-ascii-art: false
           path-to-workflows: |-
