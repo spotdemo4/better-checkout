@@ -33,7 +33,7 @@ jobs:
           fetch-depth: 0
 
       - name: Bump
-        uses: spotdemo4/bumper@ee287f181dc901b1bbd2269e7fb1091fa4703498 # v0.36.0
+        uses: spotdemo4/bumper@b5db269a9ac4076e5368e30e4cafa47e8138fe4f # v0.37.0
         with:
           github_token: ${{ steps.checkout.outputs.token }}
           debug: ${{ runner.debug }}
